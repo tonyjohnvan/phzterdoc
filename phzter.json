@@ -41,7 +41,7 @@
                         }
                     },
                     "424": {
-                        "description": "Cannot read the server due to [Firebase](https://www.firebase.com/) network issue"
+                        "description": "Cannot reach server to [Firebase](https://www.firebase.com/) due network issue"
                     }
                 }
             }
@@ -62,7 +62,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful response"
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/loggedAuth"
+                        }
                     },
                     "422": {
                         "description": "Failed Login due to `INVALID_EMAIL` or `INVALID_USER`"
@@ -71,7 +74,177 @@
                         "description": "Failed Login due to `INVALID_PASSWORD`"
                     },
                     "424": {
-                        "description": "Failed Login due to [Firebase](https://www.firebase.com/) network issue"
+                        "description": "Cannot reach server to [Firebase](https://www.firebase.com/) due network issue"
+                    }
+                }
+            }
+        },
+        "/api/create_user": {
+            "post": {
+                "description": "`post` method to `create` user using email address and passwords\n",
+                "parameters": [
+                    {
+                        "name": "newuser",
+                        "in": "body",
+                        "description": "The new user JSON you want to post",
+                        "schema": {
+                            "$ref": "#/definitions/user"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/loggedAuth"
+                        }
+                    },
+                    "406": {
+                        "description": "Created on `dedicated server` list but failed creation on `users` list"
+                    },
+                    "505": {
+                        "description": "Failed creation on the statge of pushing into `dedicated server`, all errors"
+                    }
+                }
+            }
+        },
+        "/api/check_login": {
+            "get": {
+                "description": "check `login` status using helper `get` method\n",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/loggedAuth"
+                        }
+                    },
+                    "401": {
+                        "description": "Failed to login [Firebase](https://www.firebase.com/)"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "get": {
+                "description": "`logout` from the system\n",
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "424": {
+                        "description": "Cannot reach server to [Firebase](https://www.firebase.com/) due network issue"
+                    }
+                }
+            }
+        },
+        "/api/eventpicupload": {
+            "post": {
+                "description": "upload the `jpeg`, `png`, `bmp`, `gif` file type from local and save to the server\n",
+                "parameters": [
+                    {
+                        "name": "newuser",
+                        "in": "body",
+                        "description": "The new user JSON you want to post",
+                        "schema": {
+                            "$ref": "#/definitions/file"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/fileUploaded"
+                        }
+                    },
+                    "428": {
+                        "description": "Cannot upload since the file is not an `image` format"
+                    }
+                }
+            }
+        },
+        "/api/events": {
+            "get": {
+                "description": "get all the `events` from the server\n",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/event"
+                        }
+                    },
+                    "505": {
+                        "description": "Cannot read from database"
+                    }
+                }
+            }
+        },
+        "/api/event/{eventid}": {
+            "get": {
+                "description": "get a `single event` form the `event list` using the event id, you can get the id from above test\n",
+                "parameters": [
+                    {
+                        "name": "eventid",
+                        "in": "path",
+                        "description": "The string ID of the event",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/event"
+                        }
+                    },
+                    "505": {
+                        "description": "Cannot read from database"
+                    }
+                }
+            }
+        },
+        "/api/sendemail/{emailadd}": {
+            "get": {
+                "description": "send email to invite user \n",
+                "parameters": [
+                    {
+                        "name": "emailadd",
+                        "in": "path",
+                        "description": "**PLEASE NOTE**  \nthe `emailadd` must contain `email address` and `temp password` seperated using `&tp=`;\nexample `tonyjohnvan@gmail.com&tp=123123`\n",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "408": {
+                        "description": "Cannot send email due to configuration issue [Gmail](https://www.google.com/settings/security/lesssecureapps)"
+                    }
+                }
+            }
+        },
+        "/api/create_event": {
+            "post": {
+                "description": "create a new `event`\n",
+                "parameters": [
+                    {
+                        "name": "newevent",
+                        "in": "body",
+                        "description": "**PLEASE NOTE**  \nmust be used after `/api/eventpicupload` is called and pictured uploaded to fill the `eventPics` array! otherwise there will be no picture in the event.\n",
+                        "schema": {
+                            "$ref": "#/definitions/event"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
                     }
                 }
             }
@@ -113,6 +286,206 @@
                 },
                 "userid": {
                     "type": "string"
+                }
+            }
+        },
+        "event": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "adddate": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "eventPics": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "neighborhood": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "zip": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "loggedAuth": {
+            "type": "object",
+            "properties": {
+                "provider": {
+                    "type": "string"
+                },
+                "uid": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "object",
+                    "properties": {
+                        "email": {
+                            "type": "string"
+                        },
+                        "isTemporaryPassword": {
+                            "type": "string"
+                        },
+                        "profileImageURL": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "auth": {
+                    "type": "object",
+                    "properties": {
+                        "provider": {
+                            "type": "string"
+                        },
+                        "uid": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "expires": {
+                    "type": "string"
+                }
+            }
+        },
+        "file": {
+            "type": "object",
+            "properties": {
+                "lastModified": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "lastModifiedDate": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "upload": {
+                    "type": "object",
+                    "properties": {
+                        "bytesSent": {
+                            "type": "integer",
+                            "format": "int32"
+                        },
+                        "progress": {
+                            "type": "integer",
+                            "format": "int32"
+                        },
+                        "total": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                },
+                "webkitRelativePath": {
+                    "type": "string"
+                }
+            }
+        },
+        "fileUploaded": {
+            "type": "object",
+            "properties": {
+                "accepted": {
+                    "type": "boolean"
+                },
+                "height": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "width": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "size": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "lastModified": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "lastModifiedDate": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "upload": {
+                    "type": "object",
+                    "properties": {
+                        "bytesSent": {
+                            "type": "integer",
+                            "format": "int32"
+                        },
+                        "progress": {
+                            "type": "integer",
+                            "format": "int32"
+                        },
+                        "total": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                },
+                "webkitRelativePath": {
+                    "type": "string"
+                },
+                "xhr": {
+                    "type": "object"
+                },
+                "previewElement": {
+                    "type": "object"
+                },
+                "previewTemplate": {
+                    "type": "object"
                 }
             }
         }
