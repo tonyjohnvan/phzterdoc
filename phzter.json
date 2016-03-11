@@ -3,7 +3,7 @@
     "info": {
         "version": "1.0.0",
         "title": "Phzter Backend Documentation v1",
-        "description": "**This example has a working backend hosted in Heroku**\n\nYou can try all HTTP operation described in this Swagger spec.\n\nFind source code of this API [here](https://bitbucket.org/tonyjohnvan/nearphzter)\n"
+        "description": "**This Document using a working backend hosted in Heroku**\n\nThese are all current `API`, more `API` are adding hand in hand with the development\n\n**PLEASE** make sure all your testing `JSON` has **_at least _** all the field provided, _more fields_ is fine but _less_ field may infection other `API`\n\nFind source code of this Backend [here](https://bitbucket.org/tonyjohnvan/nearphzter)\n"
     },
     "host": "phzter.herokuapp.com",
     "schemes": [
